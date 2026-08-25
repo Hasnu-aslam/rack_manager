@@ -182,4 +182,4 @@ Use Supabase, Railway PostgreSQL, or AWS RDS.
 
 ## License
 
-MIT
+
