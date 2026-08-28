@@ -1,3 +1,5 @@
+import os
+
 try:
     from pydantic_settings import BaseSettings
 except ImportError:
@@ -26,6 +28,12 @@ class Settings(BaseSettings):
     # File Upload
     MAX_UPLOAD_SIZE: int = 10 * 1024 * 1024  # 10MB
     UPLOAD_DIR: str = "uploads"
+    
+    @property
+    def upload_dir_path(self) -> str:
+        if os.environ.get("VERCEL"):
+            return "/tmp/uploads"
+        return os.path.abspath(os.path.join(os.path.dirname(__file__), "../../../uploads"))
     
     class Config:
         env_file = ".env"

@@ -13,7 +13,7 @@ app = FastAPI(
     redoc_url="/redoc",
 )
 
-UPLOAD_DIR = os.path.abspath(os.path.join(os.path.dirname(__file__), "../../uploads"))
+UPLOAD_DIR = settings.upload_dir_path
 os.makedirs(UPLOAD_DIR, exist_ok=True)
 app.mount("/uploads", StaticFiles(directory=UPLOAD_DIR), name="uploads")
 

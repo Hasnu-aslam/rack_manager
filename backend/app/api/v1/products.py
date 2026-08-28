@@ -10,6 +10,7 @@ from app.schemas.product import ProductCreate, ProductUpdate, Product as Product
 from app.services.inventory_service import InventoryService
 from app.models.user import User
 from app.api.v1.auth import get_current_user
+from app.core.config import settings
 
 router = APIRouter()
 
@@ -180,8 +181,7 @@ async def upload_product_image(
     file: UploadFile = File(...),
     current_user: User = Depends(get_current_user)
 ):
-    """Upload product image, convert to JPEG and save locally"""
-    UPLOAD_DIR = os.path.abspath(os.path.join(os.path.dirname(__file__), "../../../../uploads"))
+    UPLOAD_DIR = settings.upload_dir_path
     os.makedirs(UPLOAD_DIR, exist_ok=True)
     
     filename = f"{uuid.uuid4()}.jpg"
