@@ -1,4 +1,4 @@
-export const API_URL = process.env.NEXT_PUBLIC_API_URL || "https://rack-manager-backend-kp4f1xm2e-hasnu-tech.vercel.app/";
+export const API_URL = process.env.NEXT_PUBLIC_API_URL || "https://rack-manager-backend.vercel.app";
 
 export class ApiClient {
   private baseUrl: string;
