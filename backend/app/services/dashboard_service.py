@@ -85,8 +85,10 @@ class DashboardService:
         
         trends = []
         for row in results:
+            date_val = row.date
+            date_str = date_val[:10] if isinstance(date_val, str) else date_val.strftime("%Y-%m-%d")
             trends.append(SalesTrend(
-                date=row.date.strftime("%Y-%m-%d"),
+                date=date_str,
                 sales=float(row.sales or 0),
                 transactions=int(row.transactions or 0)
             ))

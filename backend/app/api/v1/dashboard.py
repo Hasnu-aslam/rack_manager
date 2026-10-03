@@ -20,7 +20,7 @@ async def get_dashboard_stats(
     current_user: User = Depends(get_current_user)
 ):
     """Get comprehensive dashboard statistics"""
-    tenant_id = current_user.tenant_id if not current_user.is_superuser else None
+    tenant_id = current_user.tenant_id
     return await DashboardService.get_dashboard_stats(db, period, start_date, end_date, tenant_id)
 
 
@@ -33,7 +33,7 @@ async def get_sales_overview(
     current_user: User = Depends(get_current_user)
 ):
     """Get sales overview for a period"""
-    tenant_id = current_user.tenant_id if not current_user.is_superuser else None
+    tenant_id = current_user.tenant_id
     return await DashboardService.get_sales_overview(db, period, start_date, end_date, tenant_id)
 
 
@@ -45,7 +45,7 @@ async def get_sales_trends(
     current_user: User = Depends(get_current_user)
 ):
     """Get sales trends over time"""
-    tenant_id = current_user.tenant_id if not current_user.is_superuser else None
+    tenant_id = current_user.tenant_id
     return await DashboardService.get_sales_trends(db, period, days, tenant_id)
 
 
@@ -58,7 +58,7 @@ async def get_best_sellers(
     current_user: User = Depends(get_current_user)
 ):
     """Get best selling products"""
-    tenant_id = current_user.tenant_id if not current_user.is_superuser else None
+    tenant_id = current_user.tenant_id
     return await DashboardService.get_best_sellers(db, limit, start_date, end_date, tenant_id)
 
 
@@ -70,7 +70,7 @@ async def get_category_performance(
     current_user: User = Depends(get_current_user)
 ):
     """Get sales performance by category"""
-    tenant_id = current_user.tenant_id if not current_user.is_superuser else None
+    tenant_id = current_user.tenant_id
     return await DashboardService.get_category_performance(db, start_date, end_date, tenant_id)
 
 
@@ -81,5 +81,5 @@ async def get_low_stock_products(
     current_user: User = Depends(get_current_user)
 ):
     """Get products with low stock"""
-    tenant_id = current_user.tenant_id if not current_user.is_superuser else None
+    tenant_id = current_user.tenant_id
     return await DashboardService.get_low_stock_products(db, threshold, tenant_id)

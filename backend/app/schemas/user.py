@@ -10,6 +10,7 @@ class UserBase(BaseModel):
 
 class UserCreate(UserBase):
     password: str
+    tenant_name: str
 
 
 class UserLogin(BaseModel):
@@ -20,9 +21,7 @@ class UserLogin(BaseModel):
 class User(UserBase):
     id: int
     is_active: bool
-    is_superuser: bool
     tenant_id: Optional[int] = None
-    is_password_configured: bool = False
     created_at: datetime
     updated_at: Optional[datetime] = None
 

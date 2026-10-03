@@ -43,7 +43,6 @@ def create_initial_data():
                 email="admin@rackmanager.com",
                 hashed_password=get_password_hash("admin123"),
                 is_active=True,
-                is_superuser=True,
                 tenant_id=default_tenant.id
             )
             db.add(admin_user)

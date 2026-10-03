@@ -4,9 +4,11 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 
-export default function LoginPage() {
+export default function SignupPage() {
   const [username, setUsername] = useState("");
+  const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [tenantName, setTenantName] = useState("");
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
   const router = useRouter();
@@ -17,28 +19,27 @@ export default function LoginPage() {
     setLoading(true);
 
     try {
-      const formData = new URLSearchParams();
-      formData.append("username", username);
-      formData.append("password", password);
-
-      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000"}/api/v1/auth/login`, {
+      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000"}/api/v1/auth/register`, {
         method: "POST",
         headers: {
-          "Content-Type": "application/x-www-form-urlencoded",
+          "Content-Type": "application/json",
         },
-        body: formData.toString(),
+        body: JSON.stringify({
+          username,
+          email,
+          password,
+          tenant_name: tenantName,
+        }),
       });
 
       if (!response.ok) {
-        const error = await response.json();
-        throw new Error(error.detail || "Login failed");
+        const errorData = await response.json();
+        throw new Error(errorData.detail || "Signup failed");
       }
 
-      const data = await response.json();
-      localStorage.setItem("access_token", data.access_token);
-      router.push("/dashboard");
+      router.push("/login");
     } catch (err: any) {
-      setError(err.message || "Login failed");
+      setError(err.message || "Signup failed");
     } finally {
       setLoading(false);
     }
@@ -54,7 +55,7 @@ export default function LoginPage() {
             </svg>
           </div>
           <h1 className="text-3xl font-extrabold text-white tracking-tight">Rack Manager</h1>
-          <p className="mt-2 text-sm text-gray-500">Sign in to manage your inventory</p>
+          <p className="mt-2 text-sm text-gray-500">Sign up to manage your inventory</p>
         </div>
         
         {error && (
@@ -73,6 +74,28 @@ export default function LoginPage() {
               onChange={(e) => setUsername(e.target.value)}
               className="w-full px-4 py-3 bg-[#1A1A1A] border border-[#333] text-white rounded-xl focus:outline-none focus:ring-1 focus:ring-[#E63946] focus:border-[#E63946] transition-all font-medium placeholder-gray-700"
               placeholder="e.g. manager"
+            />
+          </div>
+          <div>
+            <label className="block text-xs font-semibold uppercase tracking-wider text-gray-500 mb-2 ml-1">Email</label>
+            <input
+              type="email"
+              required
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              className="w-full px-4 py-3 bg-[#1A1A1A] border border-[#333] text-white rounded-xl focus:outline-none focus:ring-1 focus:ring-[#E63946] focus:border-[#E63946] transition-all font-medium placeholder-gray-700"
+              placeholder="e.g. manager@example.com"
+            />
+          </div>
+          <div>
+            <label className="block text-xs font-semibold uppercase tracking-wider text-gray-500 mb-2 ml-1">Organization / Tenant Name</label>
+            <input
+              type="text"
+              required
+              value={tenantName}
+              onChange={(e) => setTenantName(e.target.value)}
+              className="w-full px-4 py-3 bg-[#1A1A1A] border border-[#333] text-white rounded-xl focus:outline-none focus:ring-1 focus:ring-[#E63946] focus:border-[#E63946] transition-all font-medium placeholder-gray-700"
+              placeholder="e.g. My Company"
             />
           </div>
           <div>
@@ -97,17 +120,17 @@ export default function LoginPage() {
                   <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
                   <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
                 </svg>
-                Logging in...
+                Signing up...
               </span>
             ) : (
-              "Sign In"
+              "Sign Up"
             )}
           </button>
           
           <div className="text-center text-sm text-gray-500 mt-6 pt-4 border-t border-[#1C1C1E]">
-            First time logging in?{" "}
-            <Link href="/signup" className="text-[#E63946] hover:text-red-400 font-medium transition-colors">
-              Sign up here
+            Already have an account?{" "}
+            <Link href="/login" className="text-[#E63946] hover:text-red-400 font-medium transition-colors">
+              Sign in here
             </Link>
           </div>
         </form>

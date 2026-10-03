@@ -24,8 +24,7 @@ async def get_sales(
 ):
     """Get all sales with optional date filters"""
     query = db.query(Sale)
-    if not current_user.is_superuser:
-        query = query.filter(Sale.tenant_id == current_user.tenant_id)
+    query = query.filter(Sale.tenant_id == current_user.tenant_id)
     
     if start_date:
         query = query.filter(Sale.created_at >= datetime.combine(start_date, datetime.min.time()))
@@ -44,8 +43,7 @@ async def get_sale(
 ):
     """Get a single sale by ID with items"""
     query = db.query(Sale).filter(Sale.id == sale_id)
-    if not current_user.is_superuser:
-        query = query.filter(Sale.tenant_id == current_user.tenant_id)
+    query = query.filter(Sale.tenant_id == current_user.tenant_id)
     sale = query.first()
     if not sale:
         raise HTTPException(status_code=404, detail="Sale not found")
@@ -59,7 +57,7 @@ async def create_sale(
     current_user: User = Depends(get_current_user)
 ):
     """Create a new sale"""
-    return await SaleService.create_sale(db, sale_data, current_user.tenant_id if not current_user.is_superuser else None)
+    return await SaleService.create_sale(db, sale_data, current_user.tenant_id)
 
 
 @router.get("/invoice/{invoice_number}", response_model=SaleSchema)
@@ -70,8 +68,7 @@ async def get_sale_by_invoice(
 ):
     """Get a sale by invoice number"""
     query = db.query(Sale).filter(Sale.invoice_number == invoice_number)
-    if not current_user.is_superuser:
-        query = query.filter(Sale.tenant_id == current_user.tenant_id)
+    query = query.filter(Sale.tenant_id == current_user.tenant_id)
     sale = query.first()
     if not sale:
         raise HTTPException(status_code=404, detail="Sale not found")

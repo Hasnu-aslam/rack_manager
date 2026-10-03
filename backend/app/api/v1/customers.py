@@ -20,8 +20,7 @@ async def get_customers(
 ):
     """Get all customers with optional search"""
     query = db.query(Customer)
-    if not current_user.is_superuser:
-        query = query.filter(Customer.tenant_id == current_user.tenant_id)
+    query = query.filter(Customer.tenant_id == current_user.tenant_id)
     
     if search:
         query = query.filter(
@@ -42,8 +41,7 @@ async def get_customer(
 ):
     """Get a single customer by ID"""
     query = db.query(Customer).filter(Customer.id == customer_id)
-    if not current_user.is_superuser:
-        query = query.filter(Customer.tenant_id == current_user.tenant_id)
+    query = query.filter(Customer.tenant_id == current_user.tenant_id)
     customer = query.first()
     if not customer:
         raise HTTPException(status_code=404, detail="Customer not found")
@@ -58,8 +56,7 @@ async def create_customer(
 ):
     """Create a new customer"""
     db_customer = Customer(**customer.model_dump())
-    if not current_user.is_superuser:
-        db_customer.tenant_id = current_user.tenant_id
+    db_customer.tenant_id = current_user.tenant_id
     db.add(db_customer)
     db.commit()
     db.refresh(db_customer)
@@ -75,8 +72,7 @@ async def update_customer(
 ):
     """Update a customer"""
     query = db.query(Customer).filter(Customer.id == customer_id)
-    if not current_user.is_superuser:
-        query = query.filter(Customer.tenant_id == current_user.tenant_id)
+    query = query.filter(Customer.tenant_id == current_user.tenant_id)
     db_customer = query.first()
     if not db_customer:
         raise HTTPException(status_code=404, detail="Customer not found")
@@ -98,8 +94,7 @@ async def delete_customer(
 ):
     """Delete a customer"""
     query = db.query(Customer).filter(Customer.id == customer_id)
-    if not current_user.is_superuser:
-        query = query.filter(Customer.tenant_id == current_user.tenant_id)
+    query = query.filter(Customer.tenant_id == current_user.tenant_id)
     db_customer = query.first()
     if not db_customer:
         raise HTTPException(status_code=404, detail="Customer not found")

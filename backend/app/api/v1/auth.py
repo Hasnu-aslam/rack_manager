@@ -6,6 +6,7 @@ from app.core.database import get_db
 from app.core.config import settings
 from app.core.security import verify_password, get_password_hash, create_access_token
 from app.models.user import User
+from app.models.tenant import Tenant
 from app.schemas.user import UserCreate, User as UserSchema, Token
 
 router = APIRouter()
@@ -37,7 +38,7 @@ def get_current_user(
 
 @router.post("/register", response_model=UserSchema, status_code=status.HTTP_201_CREATED)
 async def register(user_data: UserCreate, db: Session = Depends(get_db)):
-    """Register a new user"""
+    """Register a new user and tenant"""
     # Check if user exists
     existing_user = db.query(User).filter(
         (User.username == user_data.username) | (User.email == user_data.email)
@@ -48,12 +49,26 @@ async def register(user_data: UserCreate, db: Session = Depends(get_db)):
             detail="Username or email already registered"
         )
     
+    # Check if tenant exists
+    existing_tenant = db.query(Tenant).filter(Tenant.name == user_data.tenant_name).first()
+    if existing_tenant:
+        raise HTTPException(
+            status_code=400,
+            detail="Tenant name already in use"
+        )
+    
+    # Create tenant
+    db_tenant = Tenant(name=user_data.tenant_name, status="active")
+    db.add(db_tenant)
+    db.flush() # flush to get the tenant id
+    
     # Create user
     hashed_password = get_password_hash(user_data.password)
     db_user = User(
         username=user_data.username,
         email=user_data.email,
-        hashed_password=hashed_password
+        hashed_password=hashed_password,
+        tenant_id=db_tenant.id
     )
     db.add(db_user)
     db.commit()
@@ -93,29 +108,5 @@ async def get_current_user_info(current_user: User = Depends(get_current_user)):
     return current_user
 
 
-from pydantic import BaseModel
 
-class SetPasswordRequest(BaseModel):
-    username_or_email: str
-    password: str
-
-
-@router.post("/set-password")
-async def set_password(data: SetPasswordRequest, db: Session = Depends(get_db)):
-    """Set initial password for a new user"""
-    user = db.query(User).filter(
-        (User.username == data.username_or_email) | (User.email == data.username_or_email)
-    ).first()
-    if not user:
-        raise HTTPException(status_code=404, detail="User not found")
-    
-    if user.hashed_password is not None and user.hashed_password != "":
-        raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST,
-            detail="Password has already been configured for this user"
-        )
-        
-    user.hashed_password = get_password_hash(data.password)
-    db.commit()
-    return {"message": "Password configured successfully"}
 

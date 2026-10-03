@@ -27,8 +27,7 @@ async def get_products(
 ):
     """Get all products with optional filters"""
     query = db.query(Product)
-    if not current_user.is_superuser:
-        query = query.filter(Product.tenant_id == current_user.tenant_id)
+    query = query.filter(Product.tenant_id == current_user.tenant_id)
     
     if category:
         query = query.filter(Product.category == category)
@@ -49,8 +48,7 @@ async def get_product(
 ):
     """Get a single product by ID"""
     query = db.query(Product).filter(Product.id == product_id)
-    if not current_user.is_superuser:
-        query = query.filter(Product.tenant_id == current_user.tenant_id)
+    query = query.filter(Product.tenant_id == current_user.tenant_id)
     product = query.first()
     if not product:
         raise HTTPException(status_code=404, detail="Product not found")
@@ -66,8 +64,7 @@ async def create_product(
     """Create a new product"""
     # Check if SKU already exists
     existing_query = db.query(Product).filter(Product.sku == product.sku)
-    if not current_user.is_superuser:
-        existing_query = existing_query.filter(Product.tenant_id == current_user.tenant_id)
+    existing_query = existing_query.filter(Product.tenant_id == current_user.tenant_id)
     existing = existing_query.first()
     if existing:
         raise HTTPException(status_code=400, detail="Product with this SKU already exists")
@@ -76,8 +73,7 @@ async def create_product(
     sizes_data = product_data.pop("sizes", None) or []
     
     db_product = Product(**product_data)
-    if not current_user.is_superuser:
-        db_product.tenant_id = current_user.tenant_id
+    db_product.tenant_id = current_user.tenant_id
         
     db.add(db_product)
     db.flush() # get product id
@@ -113,8 +109,7 @@ async def update_product(
 ):
     """Update a product"""
     query = db.query(Product).filter(Product.id == product_id)
-    if not current_user.is_superuser:
-        query = query.filter(Product.tenant_id == current_user.tenant_id)
+    query = query.filter(Product.tenant_id == current_user.tenant_id)
     db_product = query.first()
     if not db_product:
         raise HTTPException(status_code=404, detail="Product not found")
@@ -154,8 +149,7 @@ async def delete_product(
 ):
     """Delete a product"""
     query = db.query(Product).filter(Product.id == product_id)
-    if not current_user.is_superuser:
-        query = query.filter(Product.tenant_id == current_user.tenant_id)
+    query = query.filter(Product.tenant_id == current_user.tenant_id)
     db_product = query.first()
     if not db_product:
         raise HTTPException(status_code=404, detail="Product not found")

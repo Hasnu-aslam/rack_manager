@@ -9,8 +9,8 @@ import os
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 from sqlalchemy.orm import Session
-from app.core.database import SessionLocal, engine
-from app.models import Base, User
+from app.core.database import SessionLocal, engine, Base
+from app.models import User
 from app.core.security import get_password_hash
 
 
@@ -28,8 +28,7 @@ def init_db():
                 username="admin",
                 email="admin@rackmanager.com",
                 hashed_password=get_password_hash("admin123"),
-                is_active=True,
-                is_superuser=True
+                is_active=True
             )
             db.add(admin_user)
             db.commit()
